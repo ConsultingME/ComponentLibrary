@@ -1,0 +1,15 @@
+<aura:component >
+	<aura:attribute name="stepNumber" type="Integer" required="true" />
+	<aura:attribute name="visible" type="Boolean" default="false" />
+	<aura:attribute name="enabled" type="Boolean" default="true" />
+
+    <aura:handler name="change" value="{!v.enabled}" action="{!c.onStepEnabledChanged}" />
+
+	<aura:registerEvent name="onCMEWizardStepEnabledChange" type="c:CMEWizardOnStepEnabledChange" />
+
+	<div>
+		<div class="{!if(!v.visible, 'hidden', '')}">
+			{!v.body}
+		</div>
+	</div>
+</aura:component>

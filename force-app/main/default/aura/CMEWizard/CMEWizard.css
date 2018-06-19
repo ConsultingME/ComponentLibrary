@@ -1,0 +1,11 @@
+.THIS .hidden {
+    display: none;
+}
+
+.THIS .slds-progress-bar.slds-progress-bar--small {
+    height: .125rem;
+}
+
+.THIS .slds-progress__list {
+    margin-bottom: -38px;
+}

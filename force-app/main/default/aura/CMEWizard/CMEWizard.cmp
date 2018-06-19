@@ -1,0 +1,176 @@
+<aura:component >
+	<!-- main settings -->
+	<aura:attribute name="startStep" type="Integer" default="1" description="StepNumber of first step"/>
+	<aura:attribute name="currentStep" type="Integer" default="1" description="StepNumber of current step"/>
+	<aura:attribute name="visible" type="Boolean" default="true" description="Show or hide the wizard"/>
+	<aura:attribute name="displaySize" type="String" default="medium" description="Size of the wizard. Supports values from the Lightning Design System Modal component"/>
+    <aura:attribute name="modalDisplay" type="Boolean" default="false" description="Display the wizard in a modal."/>
+    <aura:attribute name="marginSize" type="String" description="xxx-small to xx-large" default="medium"/>
+
+	<!-- header settings -->
+	<aura:attribute name="headerLineOne" type="String" description="Text to display in first line of header" />
+	<aura:attribute name="headerLineTwo" type="String" description="Text to display in second line of header" />
+	<aura:attribute name="headerIcon" type="String" default="custom:custom9" description="Name of icon from Lightning Design System to display in header"/>
+	<aura:attribute name="headerIconDisplaySize" type="String" default="medium" description="Size of the header icon. Supports values from the Lightning Design System Modal component"/>
+	<aura:attribute name="headerIconAlternativeText" type="String" description="Alternative text for header icon" />
+	<aura:attribute name="headerIconClass" type="String" description="headerIconClass for header icon" />
+	<aura:attribute name="headerIconTitle" type="String" description="Tooltip text for header icon" />
+	<aura:attribute name="headerIconVariant" type="String" description="Variant of icon from Lightning Design System to use for header icon" />
+
+	<!-- button settings -->
+	<aura:attribute name="cancelButtonLabel" type="String" default="Cancel" description="Label on cancel/close button"/>
+	<aura:attribute name="previousButtonLabel" type="String" default="Previous" description="Label on button that moves to previous slide"/>
+	<aura:attribute name="nextButtonLabel" type="String" default="Next" description="Label on button that moves to next slide"/>
+	<aura:attribute name="finishButtonLabel" type="String" default="Finish" description="Label on finish/save button on final slide"/>
+
+	<!-- alerts settings -->
+	<aura:attribute name="alertClass" type="String" description="CSS class to apply to each alert"/>
+	<aura:attribute name="alerts" type="List" description="List of alerts to display. Alerts should have level and message properties. Level should be one of the State values from the Lightning Design System Alert component"/>
+	<aura:attribute name="allowAlertClosing" type="Boolean" description="Allow the user to close alerts"/>
+	<aura:attribute name="alertCloseAltText" type="String" description="Alternative text for alert close button"/>
+	<aura:attribute name="alertCloseIcon" type="String" description="Name of icon from Lightning Design System to use for alert close button" default="utility:close"/>
+	<aura:attribute name="alertCloseIconVariant" type="String" description="Variant of icon from Lightning Design System to use for alert close button"/>
+	<aura:attribute name="alertContainerClass" type="String" description="CSS class to apply to the alert container"/>
+
+	<!-- progressIndicator settings -->
+	<aura:attribute name="progressIndicatorClass" type="String" description="CSS class to apply to progress indicator"/>
+	<aura:attribute name="progressIndicatorTitle" type="String" description="Tooltip text for progress indicator"/>
+	<aura:attribute name="progressIndicatorType" type="String" description="Type of progress indicator. Use values from lightning:progressIndicator"/>
+	<aura:attribute name="progressIndicatorVariant" type="String" default="shaded" description="Variant of progress indicator. Use values from lightning:progressIndicator"/>
+
+	<!-- private attributes -->
+	<aura:attribute name="stepCount" type="Integer" default="0" access="private"/>
+	<aura:attribute name="stepStack" type="List" access="private"/>
+	<aura:attribute name="progress" type="Integer" default="0" access="private"/>
+	<aura:attribute name="picontainer" type="Aura.Component[]" access="private"/>
+	<aura:attribute name="hasAlerts" type="Boolean" default="{!v.alerts.length gt 0}" access="private"/>
+	<aura:attribute name="isFirstStep" type="Boolean" default="true" access="private"/>
+	<aura:attribute name="isLastStep" type="Boolean" default="false" access="private"/>
+
+	<!-- registered events -->
+	<aura:registerEvent name="onCMEWizardNextStep" type="c:CMEWizardOnStepChange" />
+	<aura:registerEvent name="onCMEWizardCancel" type="c:CMEWizardOnCancel" />
+
+	<!-- event handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.currentStep}" action="{!c.onStepChanged}" />
+	<aura:handler name="onCMEWizardNextStep" event="c:CMEWizardOnStepChange" action="{!c.onStepChangeRequest}" includeFacets="true" phase="capture"/>
+	<aura:handler name="onCMEWizardCancel" event="c:CMEWizardOnCancel" action="{!c.onCancel}" includeFacets="true" phase="capture"/>
+	<aura:handler name="onCMEWizardStepEnabledChange" event="c:CMEWizardOnStepEnabledChange" action="{!c.onStepEnabledChange}" includeFacets="true" phase="capture"/>
+
+	<!-- methods -->
+	<aura:method name="addSteps" description="Used to dynamically add steps" action="{!c.onAddSteps}">
+        <aura:attribute name="steps" type="List"/>
+	</aura:method>
+	<aura:method name="removeSteps" description="Used to dynamically remove steps" action="{!c.onRemoveSteps}">
+        <aura:attribute name="criteria" type="List"/>
+	</aura:method>
+
+	<div>
+		<div class="{! if(v.visible, '', 'hidden')}">
+            <aura:if isTrue="{!v.modalDisplay}">
+                <c:ModalWindow displaySize="{!v.displaySize}" marginSize="{!v.marginSize}">
+					<aura:set attribute="header">
+						<div class="slds-media">
+							<div Class="slds-media__figure">
+								<lightning:icon alternativeText="{!v.headerIconAlternativeText}" 
+									class="{!v.headerIconClass}" 
+									iconName="{!v.headerIcon}" 
+									size="{!v.headerIconDisplaySize}" 
+									title="{!v.headerIconTitle}" 
+									variant="{!v.headerIconVariant}" 
+								/>
+							</div>
+							<div Class="slds-media__body slds-text-align_left">
+								<nav>
+									<ol class="slds-breadcrumb slds-line-height_reset">
+										<li class="slds-breadcrumb__item">
+											<span>{!v.headerLineOne}</span>
+										</li>
+									</ol>
+								</nav>
+								<h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="{!v.headerLineTwo}">{!v.headerLineTwo}</h1>
+							</div>
+						</div>
+					</aura:set>
+
+					<c:CMEAlerts aura:id="theAlerts"
+						alertClass="{!v.alertClass}"
+						alerts="{!v.alerts}"
+						allowAlertClosing="{!v.allowAlertClosing}"
+						closeAltText="{!v.alertCloseAltText}"
+						closeIcon="{!v.alertCloseIcon}"
+						closeIconVariant="{!v.alertCloseIconVariant}"
+						containerClass="{!v.alertContainerClass}"
+					/>
+
+					{!v.body}
+
+                    <aura:set attribute="footer">
+
+                        <lightning:layout horizontalAlign="spread" verticalAlign="center" >
+                            <lightning:layoutItem >
+                                <lightning:button label="{!v.cancelButtonLabel}" onclick="{!c.onCancelRequest}" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem flexibility="grow" >
+								{!v.picontainer}
+                            </lightning:layoutItem>
+                            <lightning:layoutItem >
+                                <lightning:button label="{!v.previousButtonLabel}" onclick="{!c.onPrevious}" disabled="{!v.isFirstStep}"/>
+                                <lightning:button label="{!if(v.isLastStep, v.finishButtonLabel, v.nextButtonLabel)}" onclick="{!c.onNextButton}"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+
+                    </aura:set>
+                </c:ModalWindow>
+
+                <aura:set attribute="else">
+                    <div>
+						<div class="slds-media">
+							<div Class="slds-media__figure">
+								<lightning:icon alternativeText="{!v.headerIconAlternativeText}" 
+									class="{!v.headerIconClass}" 
+									iconName="{!v.headerIcon}" 
+									size="{!v.headerIconDisplaySize}" 
+									title="{!v.headerIconTitle}" 
+									variant="{!v.headerIconVariant}" 
+								/>
+							</div>
+							<div Class="slds-media__body slds-text-align_left">
+								<nav>
+									<ol class="slds-breadcrumb slds-line-height_reset">
+										<li class="slds-breadcrumb__item">
+											<span>{!v.headerLineOne}</span>
+										</li>
+									</ol>
+								</nav>
+								<h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="{!v.headerLineTwo}">{!v.headerLineTwo}</h1>
+							</div>
+						</div>
+
+						<c:CMEAlerts aura:id="theAlerts"
+							alertClass="{!v.alertClass}"
+							alerts="{!v.alerts}"
+							allowAlertClosing="{!v.allowAlertClosing}"
+							closeAltText="{!v.alertCloseAltText}"
+							closeIcon="{!v.alertCloseIcon}"
+							closeIconVariant="{!v.alertCloseIconVariant}"
+							containerClass="{!v.alertContainerClass}"
+						/>
+
+						{!v.body}
+
+						{!v.picontainer}
+
+						<lightning:button label="{!v.cancelButtonLabel}" onclick="{!c.onCancelRequest}" />
+						<lightning:button label="{!v.previousButtonLabel}" onclick="{!c.onPrevious}" disabled="{!v.isFirstStep}"/>
+						<lightning:button label="{!if(v.isLastStep, v.finishButtonLabel, v.nextButtonLabel)}" onclick="{!c.onNextButton}"/>
+                    </div>
+                </aura:set>
+                
+            </aura:if>
+			
+		</div>
+	</div>
+
+</aura:component>

@@ -1,0 +1,13 @@
+.THIS {
+}
+
+.THIS .cme-errormessage {
+	width: 50%;
+    left: 25%;
+    right: 25%;
+    border-radius: .25rem;
+}
+
+.THIS .hidden {
+	display:none;
+}

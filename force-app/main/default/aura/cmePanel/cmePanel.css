@@ -1,0 +1,49 @@
+.THIS .floating {
+    height: initial !important;
+    position: fixed;
+    z-index: 10000;
+}
+
+.THIS h2 {
+    width: 100%
+}
+
+.THIS .slds-text-heading_small {
+    line-height: 1.5rem !important;
+}
+
+.THIS .slds-panel {
+    background: white;
+    border-radius: 0.25rem;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: .25rem;
+    background-clip: padding-box;
+    box-shadow: 10px 11px 11px 3px rgba(0, 0, 0, 0.1);
+}
+
+.THIS .slds-panel_docked {
+    position: absolute !important;
+}
+
+.THIS .slds-panel__header {
+    cursor: -webkit-grab; 
+    cursor: grab;
+    display: flex;
+    position: relative;
+    padding: 1rem !important;
+    border-bottom: 1px solid #dddbda;
+    font-weight: 300;
+    background-color: #F3F2F2;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.THIS .slds-panel__body {
+    padding: 1rem;
+}
+
+.THIS .slds-panel__close {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    margin-top: -0.75rem;
+}

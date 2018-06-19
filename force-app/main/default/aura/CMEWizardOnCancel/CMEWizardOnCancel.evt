@@ -1,0 +1,1 @@
+<aura:event type="COMPONENT" description="Fired when the user requests to cancel the wizard." />

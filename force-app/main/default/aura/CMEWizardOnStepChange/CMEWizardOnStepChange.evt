@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="currentStep" type="Integer" description="Current step number from which this event was fired"/>
+    <aura:attribute name="requestedStep" type="Integer" description="Step number which the wizard is moving to. Will be null when current step is the final step"/>
+    <aura:attribute name="stopPropagation" type="Boolean" default="false" description="Set to true to stop the wizard from moving to the request step number"/>
+    <aura:attribute name="alerts" type="List" description="List of alerts to display. Used when stopPropagation is true to display errors or messages for user"/>
+</aura:event>

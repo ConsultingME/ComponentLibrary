@@ -1,0 +1,24 @@
+<aura:component >
+	<aura:attribute name="alerts" type="List" default="[]" />
+	<aura:attribute name="allowAlertClosing" type="Boolean" default="true" />
+
+	<aura:attribute name="containerClass" type="String" />
+	<aura:attribute name="alertClass" type="String" />
+
+	<aura:attribute name="closeIcon" type="String" default="utility:close" />
+	<aura:attribute name="closeIconVariant" type="String" default="bare" />
+	<aura:attribute name="closeAltText" type="String" default="Close" />
+
+    <div>
+        <div class="{! (v.alerts.length > 0) ? 'slds-notify_container cme-errormessage' + v.containerClass : ''}">
+            <aura:iteration items="{!v.alerts}" var="alert" indexVar="idx">
+	            <div class="{! 'slds-notify slds-notify--alert slds-theme--' + alert.level + ' slds-theme--alert-texture'}" role="alert">
+	                <lightning:buttonIcon value="{!idx}" iconName="{!v.closeIcon}" variant="{!v.closeIconVariant}" onclick="{! c.onClickClose }" alternativeText="{!v.closeAltText}" class="{! if(v.allowAlertClosing, 'slds-button slds-notify__close slds-button--icon-inverse', 'hidden')}"/>
+	                <h2 class="{!v.alertClass}">
+	    	            {!alert.message}
+		            </h2>
+	            </div>
+            </aura:iteration>
+        </div>
+    </div>
+</aura:component>

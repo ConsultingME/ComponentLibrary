@@ -1,0 +1,29 @@
+<aura:component>
+
+	<!-- DESIGN ATTRIBUTES -->
+	<aura:attribute name="headerText" type="String" default="Panel Header" description="Header Text" />
+	<aura:attribute name="closeButtonDescription" type="String" default="Close Filter Panel" description="Alt Text for close icon" />
+	<aura:attribute name="floating" type="Boolean" default="true" description="docked or floating panel" />
+	<aura:attribute name="location" type="String" default="left" description="left or right" />
+
+	<!-- BEHAVIOR ATTRIBUTES -->
+	<aura:attribute name="open" type="Boolean" default="true" description="Set to open or close the panel" />
+
+	<!-- EVENT HANDLERS -->
+
+	<div>
+		<div aura:id="cme-panel"
+			class="{! 'slds-panel slds-panel_docked' + if(v.floating, ' floating', '') + if(v.docked, ' slds-panel_docked-' + v.location, '') + if(v.open, ' slds-is-open', '')}" 
+			aria-hidden="false">
+			
+			<div aura:id="cme-panel__header" class="slds-panel__header">
+                <lightning:icon iconName="utility:chat" alternativeText="Chat" size="small" class="slds-m-right_small"/>
+				<h2 class="slds-text-heading_small">Chatter</h2>
+				<lightning:buttonIcon alternativeText="{!v.closeButtonDescription}" class="slds-button--icon-small" iconName="utility:close" size="small" title="{!v.closeButtonDescription}" variant="bare" onclick="{!c.onClickClose}"/>
+			</div>
+			<div class="slds-panel__body">
+				{!v.body}
+			</div>
+		</div>
+	</div>
+</aura:component>
